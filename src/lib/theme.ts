@@ -6,4 +6,4 @@ export function applyTheme(t: Theme) {
   localStorage.setItem('ft-theme', t)
 }
 
-export const getTheme = (): Theme => (localStorage.getItem('ft-theme') as Theme) || 'system'
+export const getTheme = (): Theme => (localStorage.getItem('ft-theme') as Theme) || 'light'

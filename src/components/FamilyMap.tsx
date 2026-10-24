@@ -54,6 +54,7 @@ export default function FamilyMap({ rows, meId, height, focus }: { rows: MemberL
   const circles = useRef(new Map<string, L.Circle>())
   const mine = useRef<L.Marker | null>(null)
   const fitted = useRef(false)
+  const pending = useRef<string | null>(null)
 
   useEffect(() => {
     const m = L.map(box.current!, { zoomControl: true }).setView([-2.5, 118], 4)
@@ -83,6 +84,10 @@ export default function FamilyMap({ rows, meId, height, focus }: { rows: MemberL
         else circles.current.set(r.id, L.circle(ll, { radius: acc, color: COLOR[r.status], weight: 1, fillOpacity: 0.1, interactive: false }).addTo(m))
       } else if (old) { old.remove(); circles.current.delete(r.id) }
     }
+    if (pending.current) {
+      const mk = markers.current.get(pending.current)
+      if (mk) { m.flyTo(mk.getLatLng(), 17); mk.openPopup(); pending.current = null; fitted.current = true }
+    }
     if (!fitted.current && markers.current.size > 0) { fitAll(); fitted.current = true }
   }, [rows, meId])
 
@@ -90,7 +95,11 @@ export default function FamilyMap({ rows, meId, height, focus }: { rows: MemberL
     if (!focus) return
     const mk = markers.current.get(focus.id)
     if (mk && map.current) { map.current.flyTo(mk.getLatLng(), 17); mk.openPopup() }
-    else toast('Anggota ini tidak sedang berbagi lokasi.', 'info')
+    else {
+      pending.current = focus.id
+      const r = rows.find((x) => x.id === focus.id)
+      if (r && !r.loc) { pending.current = null; toast('Anggota ini tidak sedang berbagi lokasi.', 'info') }
+    }
   }, [focus]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function fitAll() {

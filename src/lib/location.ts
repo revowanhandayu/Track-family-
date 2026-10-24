@@ -1,6 +1,6 @@
 import { supabase } from './supabase'
 
-export type Duration = '15m' | '1h' | '8h' | 'manual'
+export type Duration = '15m' | '1h' | '8h' | '24h' | 'manual'
 export interface Share {
   id: string; user_id: string; family_id: string; is_active: boolean
   duration: Duration; started_at: string; expires_at: string | null
@@ -14,7 +14,7 @@ export const STATUS_LABEL: Record<LocStatus, string> = {
   live: 'Aktif', stale: 'Kedaluwarsa', waiting: 'Menunggu lokasi', off: 'Tidak berbagi',
 }
 export const DURATION_LABEL: Record<Duration, string> = {
-  '15m': '15 menit', '1h': '1 jam', '8h': '8 jam', manual: 'Sampai dihentikan',
+  '15m': '15 menit', '1h': '1 jam', '8h': '8 jam', '24h': '24 jam', manual: 'Sampai dihentikan',
 }
 
 export const shareIsLive = (s?: Share | null, now = Date.now()) =>
@@ -40,7 +40,8 @@ async function rpc<T = void>(fn: string, args: Record<string, unknown> = {}): Pr
   return data as T
 }
 
-export const startSharing = (d: Duration) => rpc<{ ok: boolean }>('start_sharing', { p_duration: d })
+export const startSharing = (d: Duration) =>
+  d === '24h' ? rpc<{ ok: boolean }>('start_sharing_24h') : rpc<{ ok: boolean }>('start_sharing', { p_duration: d })
 export const stopSharing = () => rpc('stop_sharing')
 export const pushLocation = (lat: number, lng: number, acc: number) =>
   rpc<{ ok: boolean; reason?: string }>('update_location', { p_lat: lat, p_lng: lng, p_acc: acc })

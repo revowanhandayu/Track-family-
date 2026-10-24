@@ -1,6 +1,6 @@
-import { useEffect, useState, type FormEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { LogOut, Trash2 } from 'lucide-react'
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { ChevronRight, LogOut, ShieldCheck, Trash2, UserRound, Palette } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { useToast } from '../components/Toast'
@@ -8,6 +8,12 @@ import Avatar from '../components/Avatar'
 import ConfirmDialog from '../components/ConfirmDialog'
 import { Field, inputCls } from '../components/AuthLayout'
 import { applyTheme, getTheme, type Theme } from '../lib/theme'
+
+function MenuRow({ icon, label, to, onClick }: { icon: ReactNode; label: string; to?: string; onClick?: () => void }) {
+  const cls = 'flex w-full items-center gap-3 py-3.5 text-left text-sm font-semibold'
+  const inner = <>{icon}<span className="flex-1">{label}</span><ChevronRight size={18} className="text-navy/40 dark:text-white/40" /></>
+  return to ? <Link to={to} className={cls}>{inner}</Link> : <button className={cls} onClick={onClick}>{inner}</button>
+}
 
 export default function Profile() {
   const { user, signOut } = useAuth()
@@ -17,6 +23,7 @@ export default function Profile() {
   const [loaded, setLoaded] = useState(false)
   const [busy, setBusy] = useState(false)
   const [theme, setTheme] = useState<Theme>(getTheme())
+  const [open, setOpen] = useState<'' | 'akun' | 'tema'>('')
   const [delOpen, setDelOpen] = useState(false)
   const [delText, setDelText] = useState('')
 
@@ -50,35 +57,42 @@ export default function Profile() {
     nav('/masuk', { replace: true })
   }
 
+  const ic = 'text-navy/70 dark:text-white/70'
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-extrabold">Profil</h1>
-      <form onSubmit={save} className="card space-y-4">
-        <div className="flex items-center gap-3">
-          <Avatar name={name || user?.email || '?'} size={56} />
-          <p className="min-w-0 truncate text-sm text-navy/60 dark:text-white/60">{user?.email}</p>
-        </div>
-        <Field label="Nama lengkap">
-          {loaded ? <input className={inputCls} value={name} onChange={(e) => setName(e.target.value)} required /> : <div className="skeleton h-10" />}
-        </Field>
-        <button className="btn-primary w-full" disabled={busy || !loaded}>Simpan</button>
-      </form>
-
-      <div className="card space-y-2">
-        <h2 className="font-bold">Tampilan</h2>
-        <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Tema">
-          {(['light', 'dark', 'system'] as Theme[]).map((t) => (
-            <button key={t} role="radio" aria-checked={theme === t}
-              className={theme === t ? 'btn-primary' : 'btn-ghost'}
-              onClick={() => { setTheme(t); applyTheme(t) }}>
-              {t === 'light' ? 'Terang' : t === 'dark' ? 'Gelap' : 'Ikuti sistem'}
-            </button>
-          ))}
-        </div>
+      <h1 className="text-xl font-extrabold">Profil</h1>
+      <div className="flex flex-col items-center text-center">
+        <Avatar name={name || user?.email || '?'} size={88} />
+        <p className="mt-3 text-lg font-extrabold">{name || '…'}</p>
+        <p className="text-sm text-navy/60 dark:text-white/60">{user?.email}</p>
       </div>
 
-      <button className="btn-ghost w-full" onClick={async () => { await signOut(); nav('/masuk') }}><LogOut size={16} /> Keluar</button>
-      <button className="btn-ghost w-full text-sos" onClick={() => setDelOpen(true)}><Trash2 size={16} /> Hapus akun</button>
+      <div className="card divide-y divide-navy/5 !py-1 dark:divide-white/10">
+        <MenuRow icon={<UserRound size={20} className={ic} />} label="Informasi Akun" onClick={() => setOpen(open === 'akun' ? '' : 'akun')} />
+        {open === 'akun' && (
+          <form onSubmit={save} className="space-y-3 py-3">
+            <Field label="Nama lengkap">
+              {loaded ? <input className={inputCls} value={name} onChange={(e) => setName(e.target.value)} required /> : <div className="skeleton h-11" />}
+            </Field>
+            <button className="btn-primary w-full" disabled={busy || !loaded}>Simpan</button>
+          </form>
+        )}
+        <MenuRow icon={<ShieldCheck size={20} className={ic} />} label="Pengaturan Privasi" to="/privasi" />
+        <MenuRow icon={<Palette size={20} className={ic} />} label="Tampilan" onClick={() => setOpen(open === 'tema' ? '' : 'tema')} />
+        {open === 'tema' && (
+          <div className="grid grid-cols-3 gap-2 py-3" role="radiogroup" aria-label="Tema">
+            {(['light', 'dark', 'system'] as Theme[]).map((t) => (
+              <button key={t} role="radio" aria-checked={theme === t} className={theme === t ? 'btn-primary' : 'btn-ghost'}
+                onClick={() => { setTheme(t); applyTheme(t) }}>
+                {t === 'light' ? 'Terang' : t === 'dark' ? 'Gelap' : 'Sistem'}
+              </button>
+            ))}
+          </div>
+        )}
+        <MenuRow icon={<Trash2 size={20} className="text-sos" />} label="Hapus akun" onClick={() => setDelOpen(true)} />
+      </div>
+
+      <button className="btn w-full border border-sos py-3 text-sos" onClick={async () => { await signOut(); nav('/masuk') }}><LogOut size={16} /> Logout</button>
 
       <ConfirmDialog open={delOpen} danger busy={busy} disabled={delText !== 'HAPUS'} confirmLabel="Hapus akun permanen"
         title="Hapus akunmu?" onCancel={() => { setDelOpen(false); setDelText('') }} onConfirm={deleteAccount}>

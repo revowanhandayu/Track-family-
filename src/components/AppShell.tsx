@@ -15,9 +15,11 @@ function SharingBanner() {
   const { live, stop } = useSharing()
   if (!live) return null
   return (
-    <div className="mb-3 flex items-center gap-2 rounded-2xl bg-live px-3 py-2 text-sm font-semibold text-white" role="status">
-      <Radio size={16} aria-hidden /> <span className="flex-1">Berbagi lokasi aktif</span>
-      <button className="rounded-lg bg-white/20 px-3 py-1 text-xs" onClick={stop}>Hentikan</button>
+    <div className="pointer-events-none fixed inset-x-0 top-[max(0.5rem,env(safe-area-inset-top))] z-[1100] flex justify-center px-4" role="status">
+      <div className="pointer-events-auto flex items-center gap-2 rounded-full bg-live py-1.5 pl-3 pr-1.5 text-xs font-semibold text-white shadow-lg">
+        <Radio size={14} aria-hidden /> Berbagi lokasi aktif
+        <button className="rounded-full bg-white/25 px-3 py-1" onClick={stop}>Hentikan</button>
+      </div>
     </div>
   )
 }

@@ -8,7 +8,7 @@ type Geo = 'idle' | 'starting' | 'watching' | 'denied' | 'unsupported'
 interface Fix { lat: number; lng: number; acc: number; at: number }
 interface Ctx {
   share: Share | null; live: boolean; geo: Geo; fix: Fix | null; message: string; needsResume: boolean
-  start: (d: Duration) => Promise<void>; stop: () => Promise<void>; resume: () => Promise<void>
+  start: (d?: Duration) => Promise<void>; stop: () => Promise<void>; resume: () => Promise<void>
 }
 
 const DENIED = 'Izin lokasi ditolak. Buka pengaturan situs di browser (ikon gembok di kolom alamat), izinkan Lokasi, lalu coba lagi.'
@@ -64,7 +64,7 @@ export function SharingProvider({ children }: { children: ReactNode }) {
       { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 })
   }, [onPos, onErr])
 
-  const start = useCallback(async (d: Duration) => {
+  const start = useCallback(async (d: Duration = '24h') => {
     if (!('geolocation' in navigator)) { setGeo('unsupported'); setMessage('Perangkat ini tidak mendukung GPS.'); return }
     setGeo('starting'); setMessage('')
     try { await getOnce() } catch (e) {

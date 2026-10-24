@@ -12,7 +12,7 @@
     <script>
       // Terapkan tema sebelum render agar tidak berkedip
       try {
-        var t = localStorage.getItem('ft-theme') || 'system';
+        var t = localStorage.getItem('ft-theme') || 'light';
         var dark = t === 'dark' || (t === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
         document.documentElement.classList.toggle('dark', dark);
       } catch (e) {}

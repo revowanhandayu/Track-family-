@@ -10,6 +10,9 @@ import ResetPassword from './pages/ResetPassword'
 import FamilyPage from './pages/Family'
 import JoinFamily from './pages/JoinFamily'
 import Profile from './pages/Profile'
+import MemberDetail from './pages/MemberDetail'
+import HistoryPage from './pages/History'
+import Privacy from './pages/Privacy'
 import Home from './pages/Home'
 import MapPage from './pages/MapPage'
 import { isConfigured } from './lib/supabase'
@@ -29,7 +32,9 @@ export default function App() {
           <Route path="peta" element={<MapPage />} />
           <Route path="keluarga" element={<FamilyPage />} />
           <Route path="gabung/:token" element={<JoinFamily />} />
-          <Route path="riwayat" element={<Placeholder title="Riwayat lokasi" stage={4} />} />
+          <Route path="riwayat" element={<HistoryPage />} />
+          <Route path="anggota/:id" element={<MemberDetail />} />
+          <Route path="privasi" element={<Privacy />} />
           <Route path="profil" element={<Profile />} />
         </Route>
       </Route>
