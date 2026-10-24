@@ -1,0 +1,13 @@
+{
+  "name": "Family Tracker",
+  "short_name": "FamTrack",
+  "description": "Keluarga Dekat, Hati Tenang",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#101828",
+  "theme_color": "#101828",
+  "lang": "id",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
