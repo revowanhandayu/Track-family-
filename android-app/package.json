@@ -1,0 +1,13 @@
+{
+  "name": "family-tracker-android",
+  "private": true,
+  "version": "0.1.0",
+  "dependencies": {
+    "@capacitor-community/background-geolocation": "^1.2.20",
+    "@capacitor/android": "^6.1.0",
+    "@capacitor/core": "^6.1.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.0"
+  }
+}

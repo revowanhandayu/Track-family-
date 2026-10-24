@@ -2,7 +2,7 @@ import { MapPinOff, Radio, TriangleAlert } from 'lucide-react'
 import { useSharing } from '../hooks/useSharing'
 
 export default function ShareControl() {
-  const { share, live, geo, fix, message, needsResume, start, stop, resume } = useSharing()
+  const { share, live, geo, fix, message, needsResume, native, start, stop, resume } = useSharing()
   const busy = geo === 'starting' && !live
 
   if (live) {
@@ -26,7 +26,7 @@ export default function ShareControl() {
         )}
         {fix && fix.acc > 100 && <p className="flex gap-2 text-xs text-amber-600"><TriangleAlert size={14} className="shrink-0" /> Akurasi rendah. Keluar ke tempat terbuka agar GPS lebih tepat.</p>}
         {message && <p role="status" className="text-xs text-amber-600">{message}</p>}
-        <p className="text-xs text-navy/60 dark:text-white/60">Lokasi hanya terkirim saat aplikasi terbuka. Jika layar mati atau browser ditutup, pembaruan bisa berhenti.</p>
+        <p className="text-xs text-navy/60 dark:text-white/60">{native ? 'Mode aplikasi Android: berbagi tetap berjalan saat layar mati, dengan notifikasi tetap di bar status.' : 'Lokasi hanya terkirim saat aplikasi terbuka. Jika layar mati atau browser ditutup, pembaruan bisa berhenti.'}</p>
         <button className="btn-danger w-full" onClick={stop}><MapPinOff size={16} /> Hentikan Berbagi Lokasi</button>
       </div>
     )

@@ -1,0 +1,11 @@
+{
+  "appId": "app.familytracker.trmily",
+  "appName": "Family Tracker",
+  "webDir": "www",
+  "server": {
+    "url": "https://trmily.netlify.app",
+    "cleartext": false,
+    "allowNavigation": ["trmily.netlify.app", "*.supabase.co", "tile.openstreetmap.org"]
+  },
+  "android": { "allowMixedContent": false }
+}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Map as MapIcon, UserPlus, Users } from 'lucide-react'
+import { MapPin, MessageCircle, Map as MapIcon, Siren, UserPlus, Users } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../hooks/useAuth'
 import { useActiveFamily } from '../hooks/useActiveFamily'
@@ -9,12 +9,15 @@ import Avatar from '../components/Avatar'
 import FamilyMap from '../components/FamilyMap'
 import MemberList from '../components/MemberList'
 import ShareControl from '../components/ShareControl'
+import NotificationBell from '../components/NotificationBell'
+import { useNotifications } from '../hooks/useNotifications'
 import EmptyState from '../components/EmptyState'
 
 export default function Home() {
   const { user } = useAuth()
   const { familyId, loading, family } = useActiveFamily()
   const { rows } = useFamilyLocations(familyId)
+  const { activeSos } = useNotifications()
   const [name, setName] = useState('')
   const [avatar, setAvatar] = useState<string | null>(null)
 
@@ -31,7 +34,7 @@ export default function Home() {
             <p className="truncate text-xl font-extrabold">Halo, {name.split(' ')[0] || 'Keluarga'} <span aria-hidden>👋</span></p>
             <p className="text-sm text-white/70">Keluarga selalu di dekatmu</p>
           </div>
-          <Link to="/profil" aria-label="Profil"><Avatar name={name || '?'} url={avatar} size={44} /></Link>
+          <div className="flex items-center gap-2"><NotificationBell /><Link to="/profil" aria-label="Profil"><Avatar name={name || '?'} url={avatar} size={44} /></Link></div>
         </div>
       </div>
 
@@ -45,6 +48,13 @@ export default function Home() {
           <div className="-mt-12 flex gap-3">
             <div className={stat}><p className="text-2xl font-extrabold">{rows.length}</p><p className="text-xs text-navy/60 dark:text-white/60">Anggota</p></div>
             <div className={stat}><p className="text-2xl font-extrabold text-live">{rows.filter((r) => r.sharing).length}</p><p className="text-xs text-navy/60 dark:text-white/60">Aktif lokasi</p></div>
+            <div className={stat}><p className={`text-2xl font-extrabold ${activeSos.length ? 'text-sos' : ''}`}>{activeSos.length}</p><p className="text-xs text-navy/60 dark:text-white/60">Peringatan</p></div>
+          </div>
+          {activeSos[0] && <Link to={`/sos/${activeSos[0].id}`} className="btn-danger w-full"><Siren size={16} /> SOS aktif, ketuk untuk melihat</Link>}
+          <div className="grid grid-cols-3 gap-2">
+            <Link to="/sos" className="btn border-2 border-sos py-3 text-sos"><Siren size={18} /> SOS</Link>
+            <Link to="/chat" className="btn-ghost py-3"><MessageCircle size={18} /> Chat</Link>
+            <Link to="/tempat" className="btn-ghost py-3"><MapPin size={18} /> Tempat</Link>
           </div>
           <ShareControl />
           <FamilyMap rows={rows} meId={user!.id} height={200} />

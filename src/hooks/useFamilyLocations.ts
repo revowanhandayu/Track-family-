@@ -32,7 +32,7 @@ export function useFamilyLocations(familyId: string | null) {
       setMembers(ms)
       await loadShares()
       const { data } = await supabase.from('current_locations')
-        .select('user_id,latitude,longitude,accuracy_m,recorded_at').in('user_id', ms.map((m) => m.user_id))
+        .select('user_id,latitude,longitude,accuracy_m,recorded_at,battery_pct,charging,speed_mps').in('user_id', ms.map((m) => m.user_id))
       setLocs(Object.fromEntries(((data ?? []) as Loc[]).map((l) => [l.user_id, l])))
     } finally { setLoading(false) }
   }, [familyId, loadShares])

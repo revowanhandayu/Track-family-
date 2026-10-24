@@ -13,6 +13,11 @@ import Profile from './pages/Profile'
 import MemberDetail from './pages/MemberDetail'
 import HistoryPage from './pages/History'
 import Privacy from './pages/Privacy'
+import SosPage from './pages/Sos'
+import SosDetail from './pages/SosDetail'
+import NotificationsPage from './pages/Notifications'
+import PlacesPage from './pages/Places'
+import ChatPage from './pages/Chat'
 import Home from './pages/Home'
 import MapPage from './pages/MapPage'
 import { isConfigured } from './lib/supabase'
@@ -35,6 +40,11 @@ export default function App() {
           <Route path="riwayat" element={<HistoryPage />} />
           <Route path="anggota/:id" element={<MemberDetail />} />
           <Route path="privasi" element={<Privacy />} />
+          <Route path="sos" element={<SosPage />} />
+          <Route path="sos/:id" element={<SosDetail />} />
+          <Route path="notifikasi" element={<NotificationsPage />} />
+          <Route path="tempat" element={<PlacesPage />} />
+          <Route path="chat" element={<ChatPage />} />
           <Route path="profil" element={<Profile />} />
         </Route>
       </Route>

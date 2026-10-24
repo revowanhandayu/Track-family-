@@ -1,6 +1,8 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { Home, Map, Users, History, UserRound, Radio } from 'lucide-react'
 import { SharingProvider, useSharing } from '../hooks/useSharing'
+import { NotificationsProvider } from '../hooks/useNotifications'
+import SosOverlay from './SosOverlay'
 
 const tabs = [
   { to: '/', label: 'Beranda', icon: Home, end: true },
@@ -27,6 +29,7 @@ function SharingBanner() {
 function Shell() {
   return (
     <div className="mx-auto min-h-dvh max-w-3xl">
+      <SosOverlay />
       <main className="px-4 pb-28 pt-[max(1rem,env(safe-area-inset-top))]">
         <SharingBanner />
         <Outlet />
@@ -59,5 +62,5 @@ function Shell() {
 }
 
 export default function AppShell() {
-  return <SharingProvider><Shell /></SharingProvider>
+  return <SharingProvider><NotificationsProvider><Shell /></NotificationsProvider></SharingProvider>
 }

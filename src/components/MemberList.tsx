@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import type { MemberLoc } from '../hooks/useFamilyLocations'
-import { STATUS_LABEL, ago, type LocStatus } from '../lib/location'
+import { STATUS_LABEL, ago, extras, type LocStatus } from '../lib/location'
 import Avatar from './Avatar'
 
 const pill: Record<LocStatus, string> = {
@@ -18,7 +18,7 @@ function Row({ r, meId }: { r: MemberLoc; meId: string }) {
         <p className="truncate text-sm font-semibold">{r.name}{r.id === meId && ' (kamu)'}</p>
         <p className="truncate text-xs text-navy/60 dark:text-white/60">
           {r.loc
-            ? `Diperbarui ${ago(r.loc.recorded_at)}${r.loc.accuracy_m != null ? ` · ±${Math.round(r.loc.accuracy_m)} m` : ''}`
+            ? [`Diperbarui ${ago(r.loc.recorded_at)}`, r.loc.accuracy_m != null ? `±${Math.round(r.loc.accuracy_m)} m` : '', ...extras(r.loc)].filter(Boolean).join(' · ')
             : r.sharing ? 'Menunggu pembaruan lokasi' : 'Lokasi tidak dibagikan'}
         </p>
       </div>

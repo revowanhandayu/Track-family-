@@ -3,7 +3,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { LocateFixed, Maximize2 } from 'lucide-react'
 import type { MemberLoc } from '../hooks/useFamilyLocations'
-import { STATUS_LABEL, ago, type LocStatus } from '../lib/location'
+import { STATUS_LABEL, ago, extras, type LocStatus } from '../lib/location'
 import { useToast } from './Toast'
 
 const COLOR: Record<LocStatus, string> = { live: '#16A34A', stale: '#F59E0B', waiting: '#F59E0B', off: '#98A2B3' }
@@ -34,6 +34,7 @@ function popup(r: MemberLoc, isMe: boolean) {
   if (r.loc) {
     if (r.loc.accuracy_m != null) add(`Akurasi ±${Math.round(r.loc.accuracy_m)} m`)
     add(`Diperbarui ${ago(r.loc.recorded_at)}`)
+    for (const x of extras(r.loc)) add(x)
     if (r.status === 'stale') add('Lokasi ini sudah lama, mungkin tidak akurat.')
     const b = document.createElement('button')
     b.textContent = 'Navigasi di aplikasi peta'

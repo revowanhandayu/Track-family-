@@ -5,7 +5,19 @@ export interface Share {
   id: string; user_id: string; family_id: string; is_active: boolean
   duration: Duration; started_at: string; expires_at: string | null
 }
-export interface Loc { user_id: string; latitude: number; longitude: number; accuracy_m: number | null; recorded_at: string }
+export interface Loc {
+  user_id: string; latitude: number; longitude: number; accuracy_m: number | null; recorded_at: string
+  battery_pct?: number | null; charging?: boolean | null; speed_mps?: number | null
+}
+
+// Info tambahan yang benar-benar dikirim perangkat (baterai, kecepatan). Tidak ada data = tidak ditampilkan.
+export function extras(l?: Loc): string[] {
+  if (!l) return []
+  const out: string[] = []
+  if (l.battery_pct != null) out.push(`Baterai ${l.battery_pct}%${l.charging ? ' (mengisi)' : ''}`)
+  if (l.speed_mps != null && l.speed_mps * 3.6 >= 5) out.push(`${Math.round(l.speed_mps * 3.6)} km/j`)
+  return out
+}
 export type LocStatus = 'live' | 'stale' | 'waiting' | 'off'
 
 export const STALE_MINUTES = Number(import.meta.env.VITE_LOCATION_STALE_MINUTES) || 5
@@ -43,8 +55,8 @@ async function rpc<T = void>(fn: string, args: Record<string, unknown> = {}): Pr
 export const startSharing = (d: Duration) =>
   d === '24h' ? rpc<{ ok: boolean }>('start_sharing_24h') : rpc<{ ok: boolean }>('start_sharing', { p_duration: d })
 export const stopSharing = () => rpc('stop_sharing')
-export const pushLocation = (lat: number, lng: number, acc: number) =>
-  rpc<{ ok: boolean; reason?: string }>('update_location', { p_lat: lat, p_lng: lng, p_acc: acc })
+export const pushLocation = (lat: number, lng: number, acc: number, batt: number | null, charging: boolean | null, speed: number | null) =>
+  rpc<{ ok: boolean; reason?: string }>('update_location', { p_lat: lat, p_lng: lng, p_acc: acc, p_batt: batt, p_charging: charging, p_speed: speed })
 
 export async function fetchMyShare(uid: string): Promise<Share | null> {
   const { data, error } = await supabase.from('location_shares')
