@@ -22,3 +22,5 @@
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }
+
+.leaflet-container { z-index: 0; font-family: inherit; border-radius: 20px; }

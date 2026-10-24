@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { Home, Map, Users, History, UserRound } from 'lucide-react'
+import { Home, Map, Users, History, UserRound, Radio } from 'lucide-react'
+import { SharingProvider, useSharing } from '../hooks/useSharing'
 
 const tabs = [
   { to: '/', label: 'Beranda', icon: Home, end: true },
@@ -9,10 +10,23 @@ const tabs = [
   { to: '/profil', label: 'Profil', icon: UserRound },
 ]
 
-export default function AppShell() {
+// Indikator jelas selama lokasi dibagikan, tampil di semua halaman.
+function SharingBanner() {
+  const { live, stop } = useSharing()
+  if (!live) return null
+  return (
+    <div className="mb-3 flex items-center gap-2 rounded-2xl bg-live px-3 py-2 text-sm font-semibold text-white" role="status">
+      <Radio size={16} aria-hidden /> <span className="flex-1">Berbagi lokasi aktif</span>
+      <button className="rounded-lg bg-white/20 px-3 py-1 text-xs" onClick={stop}>Hentikan</button>
+    </div>
+  )
+}
+
+function Shell() {
   return (
     <div className="mx-auto min-h-dvh max-w-3xl">
       <main className="px-4 pb-28 pt-[max(1rem,env(safe-area-inset-top))]">
+        <SharingBanner />
         <Outlet />
       </main>
       <nav
@@ -40,4 +54,8 @@ export default function AppShell() {
       </nav>
     </div>
   )
+}
+
+export default function AppShell() {
+  return <SharingProvider><Shell /></SharingProvider>
 }

@@ -1,4 +1,3 @@
--- FAMILY TRACKER — Migration 0001: skema inti (Tahap 1)
 -- Aman dijalankan ulang (IF NOT EXISTS). RLS diaktifkan di semua tabel;
 -- tanpa policy = semua akses ditolak. Policy lengkap dibuat di Tahap 8.
 
