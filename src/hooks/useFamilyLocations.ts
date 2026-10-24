@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { listMembers, type Member } from '../lib/family'
+import { resolveAvatars } from '../lib/avatar'
 import { shareIsLive, statusOf, type Loc, type LocStatus, type Share } from '../lib/location'
 
 export interface MemberLoc {
@@ -14,6 +15,7 @@ export function useFamilyLocations(familyId: string | null) {
   const [locs, setLocs] = useState<Record<string, Loc>>({})
   const [loading, setLoading] = useState(true)
   const [now, setNow] = useState(Date.now())
+  const [avatarMap, setAvatarMap] = useState<Record<string, string>>({})
 
   const loadShares = useCallback(async () => {
     if (!familyId) return
@@ -36,6 +38,14 @@ export function useFamilyLocations(familyId: string | null) {
   }, [familyId, loadShares])
 
   useEffect(() => { setLoading(true); loadAll() }, [loadAll])
+
+  useEffect(() => {
+    const paths = members.map((m) => m.profiles?.avatar_url).filter((x): x is string => !!x)
+    if (!paths.length) { setAvatarMap({}); return }
+    let off = false
+    resolveAvatars(paths).then((m) => { if (!off) setAvatarMap(m) })
+    return () => { off = true }
+  }, [members])
 
   // Realtime + polling cadangan (jika koneksi realtime terputus)
   useEffect(() => {
@@ -61,10 +71,10 @@ export function useFamilyLocations(familyId: string | null) {
     const sharing = shares.some((s) => s.user_id === m.user_id && shareIsLive(s, now))
     const loc = sharing ? locs[m.user_id] : undefined // lokasi lama tidak ditampilkan bila tidak berbagi
     return {
-      id: m.user_id, name: m.profiles?.full_name ?? 'Pengguna', avatar: m.profiles?.avatar_url ?? null,
+      id: m.user_id, name: m.profiles?.full_name ?? 'Pengguna', avatar: (m.profiles?.avatar_url && avatarMap[m.profiles.avatar_url]) || null,
       role: m.role, loc, sharing, status: statusOf(sharing, loc, now),
     }
-  }), [members, shares, locs, now])
+  }), [members, shares, locs, now, avatarMap])
 
   return { rows, loading, refresh: loadAll }
 }

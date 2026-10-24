@@ -34,6 +34,9 @@ Deno.serve(async (req) => {
   }
   for (const f of owned ?? []) await admin.from('families').delete().eq('id', f.id)
 
+  const { data: files } = await admin.storage.from('avatars').list(user.id)
+  if (files?.length) await admin.storage.from('avatars').remove(files.map((f) => `${user.id}/${f.name}`))
+
   await admin.from('audit_logs').insert({ actor_id: user.id, action: 'account.delete' })
   const { error } = await admin.auth.admin.deleteUser(user.id)
   if (error) return json({ error: 'Gagal menghapus akun' }, 500)

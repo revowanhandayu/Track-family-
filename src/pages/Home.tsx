@@ -16,9 +16,10 @@ export default function Home() {
   const { familyId, loading, family } = useActiveFamily()
   const { rows } = useFamilyLocations(familyId)
   const [name, setName] = useState('')
+  const [avatar, setAvatar] = useState<string | null>(null)
 
   useEffect(() => {
-    supabase.from('profiles').select('full_name').eq('id', user!.id).single().then(({ data }) => setName(data?.full_name ?? ''))
+    supabase.from('profiles').select('full_name,avatar_url').eq('id', user!.id).single().then(({ data }) => { setName(data?.full_name ?? ''); setAvatar(data?.avatar_url ?? null) })
   }, [user])
 
   const stat = 'card flex-1 !p-3 text-center'
@@ -30,7 +31,7 @@ export default function Home() {
             <p className="truncate text-xl font-extrabold">Halo, {name.split(' ')[0] || 'Keluarga'} <span aria-hidden>👋</span></p>
             <p className="text-sm text-white/70">Keluarga selalu di dekatmu</p>
           </div>
-          <Link to="/profil" aria-label="Profil"><Avatar name={name || '?'} size={44} /></Link>
+          <Link to="/profil" aria-label="Profil"><Avatar name={name || '?'} url={avatar} size={44} /></Link>
         </div>
       </div>
 
